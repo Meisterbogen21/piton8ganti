@@ -1,5 +1,5 @@
-Jenis Mobil,Nomor Polisi,	Penyewa, Tanggal Sewa, Tanggal kembali
-Toyota Avanza,B3456MNO,John Doe,2025-01-01,2025-01-05
-Honda Brio,B7890PQR,Jane Smith,2025-01-03,2025-01-07
-Daihatsu Xenia,B9012STU,Adam Malik,2025-01-05,2025-01-10
-Suzuki Ertiga,B1234VWX,Siti Aisyah,2025-01-02,2025-01-06
+Jenis Mobil, Tipe Mobil, Nomor Polisi,	Penyewa, Tanggal Sewa, Tanggal kembali
+Toyota Avanza,MPV,B3456MNO,John Doe,2025-01-01,2025-01-05
+Honda Brio,Hatchback,B7890PQR,Jane Smith,2025-01-03,2025-01-07
+Toyota Camry,Sedan,B9012STU,Adam Malik,2025-01-05,2025-01-10
+Toyota Fortuner,SUV,B1234VWX,Siti Aisyah,2025-01-02,2025-01-06

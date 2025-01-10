@@ -99,7 +99,7 @@ class RentalService:
         self.available_cars.append({
             "car_name": rented_car["car_name"],
             "plate_number": rented_car["plate_number"],
-            "status": "Tersedia"
+            "status": "Rusak/Mekanik"
         })
         rented_car["car_name"] = replacement_car["car_name"]
         rented_car["plate_number"] = replacement_car["plate_number"]

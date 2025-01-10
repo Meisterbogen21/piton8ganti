@@ -44,8 +44,7 @@ class RentalService:
                         "plate_number": row[2],
                         "status": row[3]
                     }
-                    if car_data["status"].lower() == "tersedia":
-                        self.available_cars.append(car_data)
+                    self.available_cars.append(car_data)
         except FileNotFoundError:
             st.error("File ketersediaan mobil tidak ditemukan. Memulai dengan data kosong.")
 
@@ -84,6 +83,11 @@ class RentalService:
         for car in self.available_cars:
             st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
 
+        st.subheader("Mobil dengan status 'Rusak/Mekanik':")
+        for car in self.available_cars:
+            if car['status'].lower() == 'rusak/mekanik':
+                st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
+
     def replace_car(self, rented_plate, replacement_plate):
         """Menggantikan mobil yang disewa dengan mobil pengganti."""
         rented_car = next((car for car in self.rented_cars if car["plate_number"] == rented_plate), None)
@@ -97,13 +101,17 @@ class RentalService:
             st.error("Mobil pengganti tidak tersedia.")
             return
 
+        if replacement_car['status'].lower() == 'rusak/mekanik':
+            st.error("Mobil pengganti memiliki status 'Rusak/Mekanik' dan tidak dapat digunakan.")
+            return
+
         # Lakukan penggantian
         self.available_cars.remove(replacement_car)
         self.available_cars.append({
             "car_name": rented_car["car_name"],
             "car_type": rented_car["car_type"],
             "plate_number": rented_car["plate_number"],
-            "status": "Tersedia"
+            "status": "Rusak/Mekanik"
         })
         rented_car["car_name"] = replacement_car["car_name"]
         rented_car["car_type"] = replacement_car["car_type"]
@@ -112,7 +120,7 @@ class RentalService:
         self.save_rented_cars()
         self.save_available_cars()
 
-        st.success(f"Mobil ({rented_car['plate_number']}) telah diganti dengan ({replacement_car['plate_number']}).")
+        st.success(f"Mobil {rented_car['car_name']} ({rented_car['plate_number']}) telah diganti dengan {replacement_car['car_name']} ({replacement_car['plate_number']}).")
 
 # Streamlit Interface
 if __name__ == "__main__":

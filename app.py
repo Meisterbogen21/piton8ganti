@@ -103,7 +103,7 @@ class RentalService:
             "car_name": rented_car["car_name"],
             "car_type": rented_car["car_type"],
             "plate_number": rented_car["plate_number"],
-            "status": "Rusak/Mekanik"
+            "status": "Tersedia"
         })
         rented_car["car_name"] = replacement_car["car_name"]
         rented_car["car_type"] = replacement_car["car_type"]
@@ -112,7 +112,7 @@ class RentalService:
         self.save_rented_cars()
         self.save_available_cars()
 
-        st.success(f"Mobil {rented_car['car_name']} ({rented_car['plate_number']}) telah diganti dengan {replacement_car['car_name']} ({replacement_car['plate_number']}).")
+        st.success(f"Mobil ({rented_car['plate_number']}) telah diganti dengan ({replacement_car['plate_number']}).")
 
 # Streamlit Interface
 if __name__ == "__main__":

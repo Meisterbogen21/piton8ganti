@@ -59,25 +59,30 @@ class RentalService:
         for car in self.available_cars:
             st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']}")
 
-    def replace_car(self):
-        """Menggantikan mobil dari daftar tersedia."""
-        if not self.available_cars:
-            st.warning("Maaf, tidak ada mobil pengganti yang tersedia.")
-            return None
+    def replace_car(self, rented_plate, replacement_plate):
+        """Menggantikan mobil yang disewa dengan mobil pengganti."""
+        rented_car = next((car for car in self.rented_cars if car["plate_number"] == rented_plate), None)
+        replacement_car = next((car for car in self.available_cars if car["plate_number"] == replacement_plate), None)
 
-        replacement_car = self.available_cars.pop(0)
-        st.success(f"Mobil pengganti: {replacement_car['car_name']} ({replacement_car['plate_number']})")
-        return replacement_car
+        if not rented_car:
+            st.error("Mobil yang ingin diganti tidak ditemukan.")
+            return
 
-    def return_car(self, car_name, plate_number):
-        """Mengembalikan mobil ke daftar mobil yang tersedia."""
-        returned_car = {
-            "car_name": car_name,
-            "plate_number": plate_number,
+        if not replacement_car:
+            st.error("Mobil pengganti tidak tersedia.")
+            return
+
+        # Lakukan penggantian
+        self.available_cars.remove(replacement_car)
+        self.available_cars.append({
+            "car_name": rented_car["car_name"],
+            "plate_number": rented_car["plate_number"],
             "status": "Tersedia"
-        }
-        self.available_cars.append(returned_car)
-        st.info(f"Mobil {car_name} ({plate_number}) telah dikembalikan dan tersedia kembali untuk disewa.")
+        })
+        rented_car["car_name"] = replacement_car["car_name"]
+        rented_car["plate_number"] = replacement_car["plate_number"]
+
+        st.success(f"Mobil {rented_car['car_name']} ({rented_car['plate_number']}) telah diganti dengan {replacement_car['car_name']} ({replacement_car['plate_number']}).")
 
 # Streamlit Interface
 if __name__ == "__main__":
@@ -86,20 +91,18 @@ if __name__ == "__main__":
     rental_service = RentalService()
 
     st.sidebar.header("Menu")
-    option = st.sidebar.radio("Pilih opsi:", ["Tampilkan Mobil", "Ganti Mobil", "Kembalikan Mobil"])
+    option = st.sidebar.radio("Pilih opsi:", ["Tampilkan Mobil", "Ganti Mobil"])
 
     if option == "Tampilkan Mobil":
         rental_service.display_rented_cars()
         rental_service.display_available_cars()
 
     elif option == "Ganti Mobil":
-        if st.button("Ganti Mobil"):
-            rental_service.replace_car()
+        rental_service.display_rented_cars()
         rental_service.display_available_cars()
 
-    elif option == "Kembalikan Mobil":
-        car_name = st.text_input("Nama Mobil yang Dikembalikan:")
-        plate_number = st.text_input("Nomor Polisi:")
-        if st.button("Kembalikan Mobil"):
-            rental_service.return_car(car_name, plate_number)
-        rental_service.display_available_cars()
+        rented_plate = st.text_input("Masukkan nomor polisi mobil yang ingin diganti:")
+        replacement_plate = st.text_input("Masukkan nomor polisi mobil pengganti:")
+
+        if st.button("Ganti Mobil"):
+            rental_service.replace_car(rented_plate, replacement_plate)

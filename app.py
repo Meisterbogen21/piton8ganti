@@ -47,6 +47,28 @@ class RentalService:
         except FileNotFoundError:
             st.error("File ketersediaan mobil tidak ditemukan. Memulai dengan data kosong.")
 
+    def save_rented_cars(self):
+        """Menyimpan data mobil yang sedang dipakai ke file CSV."""
+        with open(self.rental_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Jenis Mobil", "Nomor Polisi", "Nama Penyewa", "Tanggal Mulai", "Tanggal Selesai"])
+            for car in self.rented_cars:
+                writer.writerow([
+                    car["car_name"],
+                    car["plate_number"],
+                    car["renter_name"],
+                    car["start_date"].strftime('%Y-%m-%d'),
+                    car["end_date"].strftime('%Y-%m-%d')
+                ])
+
+    def save_available_cars(self):
+        """Menyimpan data mobil yang tersedia ke file CSV."""
+        with open(self.available_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(["Jenis Mobil", "Nomor Polisi", "Status"])
+            for car in self.available_cars:
+                writer.writerow([car["car_name"], car["plate_number"], car["status"]])
+
     def display_rented_cars(self):
         """Menampilkan data mobil yang sedang dipakai."""
         st.subheader("Mobil yang sedang dipakai:")
@@ -81,6 +103,9 @@ class RentalService:
         })
         rented_car["car_name"] = replacement_car["car_name"]
         rented_car["plate_number"] = replacement_car["plate_number"]
+
+        self.save_rented_cars()
+        self.save_available_cars()
 
         st.success(f"Mobil {rented_car['car_name']} ({rented_car['plate_number']}) telah diganti dengan {replacement_car['car_name']} ({replacement_car['plate_number']}).")
 

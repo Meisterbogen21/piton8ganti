@@ -81,7 +81,8 @@ class RentalService:
         """Menampilkan mobil yang tersedia."""
         st.subheader("Mobil yang tersedia:")
         for car in self.available_cars:
-            st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
+            if car['status'].lower() != 'rusak/mekanik':
+                st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
 
         st.subheader("Mobil dengan status 'Rusak/Mekanik':")
         for car in self.available_cars:
@@ -142,7 +143,7 @@ if __name__ == "__main__":
         rented_plate = st.selectbox("Pilih nomor polisi mobil yang ingin diganti:", [car["plate_number"] for car in rental_service.rented_cars])
         rented_car_type = next((car["car_type"] for car in rental_service.rented_cars if car["plate_number"] == rented_plate), None)
 
-        available_replacements = [car["plate_number"] for car in rental_service.available_cars if car["car_type"] == rented_car_type]
+        available_replacements = [car["plate_number"] for car in rental_service.available_cars if car["car_type"] == rented_car_type and car["status"].lower() != 'rusak/mekanik']
 
         replacement_plate = st.selectbox("Pilih nomor polisi mobil pengganti:", available_replacements)
 

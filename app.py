@@ -116,18 +116,18 @@ if __name__ == "__main__":
     rental_service = RentalService()
 
     st.sidebar.header("Menu")
-    option = st.sidebar.radio("Pilih opsi:", ["Tampilkan Mobil", "Ganti Mobil"])
+    menu = st.sidebar.radio("Pilih menu:", ["Tampilkan Mobil", "Ganti Mobil"])
 
-    if option == "Tampilkan Mobil":
+    if menu == "Tampilkan Mobil":
         rental_service.display_rented_cars()
         rental_service.display_available_cars()
 
-    elif option == "Ganti Mobil":
+    elif menu == "Ganti Mobil":
         rental_service.display_rented_cars()
         rental_service.display_available_cars()
 
-        rented_plate = st.text_input("Masukkan nomor polisi mobil yang ingin diganti:")
-        replacement_plate = st.text_input("Masukkan nomor polisi mobil pengganti:")
+        rented_plate = st.selectbox("Pilih nomor polisi mobil yang ingin diganti:", [car["plate_number"] for car in rental_service.rented_cars])
+        replacement_plate = st.selectbox("Pilih nomor polisi mobil pengganti:", [car["plate_number"] for car in rental_service.available_cars])
 
         if st.button("Ganti Mobil"):
             rental_service.replace_car(rented_plate, replacement_plate)

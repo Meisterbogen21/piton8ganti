@@ -2,6 +2,7 @@ import csv
 from datetime import datetime
 import os
 import streamlit as st
+import pandas as pd
 
 class RentalService:
     def __init__(self):
@@ -74,20 +75,39 @@ class RentalService:
     def display_rented_cars(self):
         """Menampilkan data mobil yang sedang dipakai."""
         st.subheader("Mobil yang sedang dipakai:")
-        for car in self.rented_cars:
-            st.write(f"{car['car_name']} ({car['plate_number']}) - {car['renter_name']} dari {car['start_date'].strftime('%Y-%m-%d')} sampai {car['end_date'].strftime('%Y-%m-%d')} - Tipe: {car['car_type']}")
+        df = pd.DataFrame(self.rented_cars)
+        df["start_date"] = df["start_date"].dt.strftime('%Y-%m-%d')
+        df["end_date"] = df["end_date"].dt.strftime('%Y-%m-%d')
+        st.table(df.rename(columns={
+            "car_name": "Jenis Mobil",
+            "car_type": "Tipe Mobil",
+            "plate_number": "Nomor Polisi",
+            "renter_name": "Penyewa",
+            "start_date": "Tanggal Sewa",
+            "end_date": "Tanggal Kembali"
+        }))
 
     def display_available_cars(self):
-        """Menampilkan mobil yang tersedia."""
+        """Menampilkan mobil yang tersedia dan yang rusak."""
         st.subheader("Mobil yang tersedia:")
-        for car in self.available_cars:
-            if car['status'].lower() != 'rusak/mekanik':
-                st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
+        available_cars = [car for car in self.available_cars if car["status"].lower() != "rusak/mekanik"]
+        df_available = pd.DataFrame(available_cars)
+        st.table(df_available.rename(columns={
+            "car_name": "Jenis Mobil",
+            "car_type": "Tipe Mobil",
+            "plate_number": "Nomor Polisi",
+            "status": "Status"
+        }))
 
         st.subheader("Mobil dengan status 'Rusak/Mekanik':")
-        for car in self.available_cars:
-            if car['status'].lower() == 'rusak/mekanik':
-                st.write(f"{car['car_name']} ({car['plate_number']}) - Status: {car['status']} - Tipe: {car['car_type']}")
+        damaged_cars = [car for car in self.available_cars if car["status"].lower() == "rusak/mekanik"]
+        df_damaged = pd.DataFrame(damaged_cars)
+        st.table(df_damaged.rename(columns={
+            "car_name": "Jenis Mobil",
+            "car_type": "Tipe Mobil",
+            "plate_number": "Nomor Polisi",
+            "status": "Status"
+        }))
 
     def replace_car(self, rented_plate, replacement_plate):
         """Menggantikan mobil yang disewa dengan mobil pengganti."""
@@ -143,7 +163,7 @@ if __name__ == "__main__":
         rented_plate = st.selectbox("Pilih nomor polisi mobil yang ingin diganti:", [car["plate_number"] for car in rental_service.rented_cars])
         rented_car_type = next((car["car_type"] for car in rental_service.rented_cars if car["plate_number"] == rented_plate), None)
 
-        available_replacements = [car["plate_number"] for car in rental_service.available_cars if car["car_type"] == rented_car_type and car["status"].lower() != 'rusak/mekanik']
+        available_replacements = [car["plate_number"] for car in rental_service.available_cars if car["car_type"] == rented_car_type and car["status"].lower() != "rusak/mekanik"]
 
         replacement_plate = st.selectbox("Pilih nomor polisi mobil pengganti:", available_replacements)
 
